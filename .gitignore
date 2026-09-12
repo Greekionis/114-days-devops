@@ -1,0 +1,12 @@
+# Packet captures (large binaries)
+*.pcap
+*.pcapng
+
+# Backup archives
+*.tar.gz
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
