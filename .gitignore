@@ -1,12 +1,33 @@
-# Packet captures (large binaries)
+# Packet captures
 *.pcap
 *.pcapng
 
 # Backup archives
 *.tar.gz
+*.tgz
+*.zip
 
 # Logs
 *.log
 
-# Temporary files
-*.tmp
+# Secrets (never commit these!)
+*.pem
+*.key
+*.env
+.env.*
+
+# Terraform state (later)
+*.tfstate
+*.tfstate.*
+
+# Kubernetes secrets
+*secret*.yaml
+*kubeconfig*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
