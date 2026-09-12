@@ -80,3 +80,24 @@ curl -w "DNS: %{time_namelookup}s | Total: %{time_total}s\n" -o /dev/null -s htt
 ### curl -w Best Practice
 ```bash
 curl -w "\nDNS: %{time_namelookup}s | TCP: %{time_connect}s | TTFB: %{time_starttransfer}s | Total: %{time_total}s\n" -o /dev/null -s <url>
+
+
+## Interview-Ready Answers
+
+### nginx vs Traefik
+nginx uses static config files + reload. Traefik watches k8s Ingress/IngressRoute resources + auto-updates. Imperative vs declarative.
+
+### HTTP 502
+Proxy/gateway received invalid or no response from upstream. Real scenarios:
+1. k8s ingress → CrashLoopBackOff pod
+2. nginx → crashed Python backend
+
+### DNS timing
+/etc/hosts = local file read = instant. DNS = network round trips + multiple queries = slower. Hence time_namelookup differs by orders of magnitude.
+
+### Ports + k3s decision
+- Privileged: 0-1023
+- Registered: 1024-49151
+- Ephemeral: 49152-65535
+- Traefik owns 0.0.0.0:80 → nginx moved to 8080
+- Kept both: "walking around a working service without breaking it" = production mindset
