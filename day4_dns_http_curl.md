@@ -27,3 +27,34 @@
 curl -I http://day4.local:8080/ok
 curl -IL http://day4.local:8080/redirect
 curl -w "DNS: %{time_namelookup}s | Total: %{time_total}s\n" -o /dev/null -s http://day4.local:8080
+
+
+## Deep Notes
+
+### /etc/hosts vs DNS
+| Aspect | /etc/hosts | DNS |
+|--------|-----------|-----|
+| Scope | Local machine only | Global |
+| Update | Manual | Centralized |
+| Speed | Instant | Network round trip |
+| Use case | Dev, overrides | Production |
+
+### HTTP 5xx Codes
+| Code | Meaning | Cause |
+|------|---------|-------|
+| 500 | Internal Server Error | Server bug |
+| 502 | Bad Gateway | Upstream broken |
+| 503 | Service Unavailable | Overloaded/maintenance |
+| 504 | Gateway Timeout | Upstream too slow |
+
+### curl -w Variables
+- `%{time_namelookup}` — DNS resolution
+- `%{time_connect}` — TCP handshake
+- `%{time_appconnect}` — TLS handshake
+- `%{time_starttransfer}` — TTFB
+- `%{time_total}` — Full request
+
+### Traefik vs nginx Routing
+- **Traefik:** reads Ingress/IngressRoute from k8s API. No resource → 404.
+- **nginx:** reads static config. Server block exists → 200.
+- **Lesson:** ingress controllers are cluster-resource-driven.
