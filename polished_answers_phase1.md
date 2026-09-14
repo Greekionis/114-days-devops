@@ -89,3 +89,52 @@ nginx reads static config files and requires a reload to apply changes. Traefik 
 - Two services cannot bind to the same port on the same interface. Traefik owns `0.0.0.0:80`; nginx moved to `8080`.
 - Port ranges: 0-1023 privileged, 1024-49151 registered, 49152-65535 ephemeral.
 - Didn't remove k3s because removing working infrastructure to avoid a conflict is running from a problem, not solving it. Real skill: understand who owns what, resolve the conflict, document the decision. "Walk around a working service without breaking it" is the production mindset.
+
+
+## Day 5: systemd + journald
+
+**What does `systemctl enable` do?**
+Creates a symlink in the target's `.wants` directory (e.g., `multi-user.target.wants`) so systemd automatically starts the service at boot. `start` runs the service now; `enable` makes it run on every boot.
+
+**What's the difference between a .service and a .timer?**
+The `.service` unit defines **what** to run. The `.timer` unit defines **when** to run it. The timer activates the service at the scheduled time. You need both: the timer points to the service, and the service contains the command.
+
+**Why is journalctl better than reading log files directly?**
+- Centralized: all services log to one place
+- Structured: supports filtering by unit, priority, time
+- Binary format: faster, less disk space
+- Rotated automatically: no manual logrotate for systemd logs
+- Persistent option: survives reboots when configured
+
+**How is `kubectl apply` similar to `systemctl start`?**
+Both are declarative "make it so" commands. `systemctl start nginx` asks systemd to bring nginx to a running state. `kubectl apply -f deployment.yaml` asks Kubernetes to reconcile the cluster to match the desired state in the YAML. In both cases, the controller (systemd or k8s) figures out the steps to achieve the goal.
+
+
+
+## Day 5: systemd + journald
+
+**What does `systemctl enable` do?**
+Creates a symlink in the target's `.wants` directory (e.g., `multi-user.target.wants`) so systemd automatically starts the service at boot. `start` runs the service now; `enable` makes it run on every boot.
+
+**What's the difference between `Type=oneshot` and `Type=simple`?**
+- `Type=simple`: systemd starts the process and assumes it's running immediately. The process stays alive (a daemon like nginx).
+- `Type=oneshot`: systemd runs the process to completion and waits for it to exit. The service is "done" after the script finishes. Used for scripts, backups, migrations.
+
+**What's the difference between a .service and a .timer?**
+The `.service` unit defines **what** to run. The `.timer` unit defines **when** to run it. The timer activates the service at the scheduled time. You need both.
+
+**Are systemd timers really a cron replacement?**
+Yes. systemd timers provide automatic logging (journald), missed-run recovery (`Persistent=true`), dependency management (`After=`, `Requires=`), second-level precision (`OnCalendar`), event-based triggering (`OnBootSec`), and easy monitoring (`systemctl list-timers`). Cron is still useful for quick scripts but production systems increasingly use systemd timers.
+
+**Why is journalctl better than reading log files directly?**
+- Centralized: all services log to one place
+- Structured: filter by unit, priority, time
+- Binary format: faster, less disk space
+- Automatic rotation
+- Persistent option: survives reboots when `/var/log/journal/` exists
+
+**How is `kubectl apply` similar to `systemctl start`?**
+Both are declarative "make it so" commands. You declare desired state; the controller (systemd or Kubernetes) reconciles reality to match. `systemctl start nginx` and `kubectl apply -f nginx.yaml` both say "make nginx run."
+
+**Why did logrotate fail with "insecure permissions"?**
+logrotate runs as root and refuses to rotate logs in directories owned by non-root users (protection against symlink attacks). Fix: add `su <user> <group>` directive to the config, telling logrotate which user owns the log.
