@@ -185,3 +185,23 @@ Kubernetes PVC Protection adds the finalizer `kubernetes.io/pvc-protection`, whi
 
 **Why did dynamic PVC not create a PV immediately?**
 k3s's `local-path` StorageClass uses `volumeBindingMode: WaitForFirstConsumer`. The PV is only created when a pod actually uses the PVC, ensuring the PV is placed on the same node as the pod. Common pattern for local storage backends.
+
+## Day 7: Process Management, strace, lsof
+
+**Why try SIGTERM before SIGKILL?**
+SIGTERM lets the process clean up — flush buffers, close connections, release locks, remove temp files. SIGKILL cannot be caught and gives no chance to clean up. Use SIGTERM first, escalate to SIGKILL only if the process ignores SIGTERM.
+
+**What does `lsof -i :8080` tell you?**
+Lists every process with an open network socket on port 8080 — listening, established, or outbound. Shows PID, user, file descriptor, and TCP state. The #1 tool for "who's using this port?"
+
+**Why does `lsof` need sudo for system services?**
+Without sudo, `lsof` only shows your own processes. System services (Traefik, nginx master) run as root or dedicated users and are hidden from unprivileged users. Always use `sudo lsof` when investigating system-level activity.
+
+**What does ENOENT mean?**
+"Error NO ENTry" = file or directory not found. In strace, look for `= -1 ENOENT` next to a syscall — the path that failed will be shown.
+
+**Why does `ps` inside a container show fewer processes?**
+Linux PID namespaces. Each container has its own PID namespace. Inside the container, you see only its processes. On the host, you see everything. This is the isolation mechanism.
+
+**What's the significance of `strace -y`?**
+`-y` annotates file descriptors with the paths they point to. Instead of `openat(...) = 3`, you see `openat(...) = 3</etc/hostname>`. Dramatically easier to read strace output.
