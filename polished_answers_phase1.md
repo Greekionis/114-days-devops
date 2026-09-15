@@ -163,3 +163,25 @@ Both are declarative "make it so" commands. You declare desired state; the contr
 
 **Why did logrotate fail with "insecure permissions"?**
 logrotate runs as root and refuses to rotate logs in directories owned by non-root users (protection against symlink attacks). Fix: add `su <user> <group>` directive to the config.
+
+## Day 6: Storage + k8s PVs
+
+**Why must you shrink the ext4 filesystem before shrinking the LV?**
+The LV is the container; the filesystem is the data structure inside it. If you shrink the LV first, the filesystem thinks it still has the old size and writes data to sectors that no longer exist — corrupting the filesystem. Always shrink the filesystem first (with e2fsck to verify), then shrink the LV.
+
+**Why use `nofail` in fstab for non-essential disks?**
+Without `nofail`, if the disk is missing at boot (detached, failed, network mount unavailable), the system will refuse to boot into multi-user mode and drop to emergency shell. `nofail` tells systemd to continue booting even if the mount fails. Use it for data disks, NFS mounts, and anything not required for the OS to function.
+
+**What's the difference between a PV and a PVC?**
+A PersistentVolume (PV) is the actual storage resource — a piece of disk, NFS share, or cloud volume. A PersistentVolumeClaim (PVC) is a request for storage by a developer — "I need 1 GB, ReadWriteOnce." Kubernetes binds PVCs to matching PVs. Developers create PVCs; admins or provisioners create PVs.
+
+**When would you use RWX instead of RWO?**
+RWX (ReadWriteMany) is used when multiple pods on multiple nodes need to read and write the same storage simultaneously — for example, shared file storage, media assets, or a shared cache. RWO (ReadWriteOnce) is for single-node access, typical for databases. RWX requires a storage backend that supports it (NFS, CephFS, cloud file storage); most block storage only supports RWO.
+
+## Day 6: Storage + k8s PVs — Deep Notes
+
+**Why did deleting a PVC hang until the pod was deleted?**
+Kubernetes PVC Protection adds the finalizer `kubernetes.io/pvc-protection`, which prevents deletion while any pod is using the PVC. The PVC stays in `Terminating` state until no pod references it. Correct deletion order: pod → PVC → PV. This prevents accidental data loss.
+
+**Why did dynamic PVC not create a PV immediately?**
+k3s's `local-path` StorageClass uses `volumeBindingMode: WaitForFirstConsumer`. The PV is only created when a pod actually uses the PVC, ensuring the PV is placed on the same node as the pod. Common pattern for local storage backends.
