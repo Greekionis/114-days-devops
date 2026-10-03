@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run a simple check
+        run: |
+          echo "Building on ${{ github.ref }}"
+          python -c "print('CI is working')"
+
+      - name: Build Docker image
+        run: |
+          cd day8-container
+          docker build -t myapp:test .
