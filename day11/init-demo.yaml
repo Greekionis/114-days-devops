@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo
+spec:
+  initContainers:
+  - name: init-setup
+    image: busybox
+    command:
+    - sh
+    - -c
+    - |
+      echo "Init container running..."
+      sleep 5
+      echo "Setting up shared data" > /work-dir/setup.txt
+      echo "Init complete"
+    volumeMounts:
+    - name: workdir
+      mountPath: /work-dir
+  containers:
+  - name: main
+    image: busybox
+    command: ["sh", "-c", "cat /work-dir/setup.txt; sleep 3600"]
+    volumeMounts:
+    - name: workdir
+      mountPath: /work-dir
+  volumes:
+  - name: workdir
+    emptyDir: {}
