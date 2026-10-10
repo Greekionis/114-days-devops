@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-1
+  labels:
+    app: web
+    tier: frontend
+    env: dev
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-2
+  labels:
+    app: web
+    tier: frontend
+    env: prod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-1
+  labels:
+    app: api
+    tier: backend
+    env: dev
+spec:
+  containers:
+  - name: busybox
+    image: busybox
+    command: ["sleep", "3600"]
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-2
+  labels:
+    app: api
+    tier: backend
+    env: prod
+spec:
+  containers:
+  - name: busybox
+    image: busybox
+    command: ["sleep", "3600"]
