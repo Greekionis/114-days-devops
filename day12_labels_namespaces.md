@@ -55,3 +55,14 @@ kubectl get pods -l 'env!=prod'
 ```bash
 sudo iptables -t nat -L KUBE-SERVICES -n | grep <clusterIP>
 sudo iptables -t nat -L KUBE-SVC-XXXXX -n
+
+
+ sudo iptables -t nat -L KUBE-SVC-VAYC7TNILV6OFX76 -n
+Chain KUBE-SVC-VAYC7TNILV6OFX76 (1 references)
+target     prot opt source               destination
+KUBE-MARK-MASQ  tcp  -- !10.42.0.0/16         10.43.29.136         /* day12/web-svc cluster IP */ tcp dpt:80
+KUBE-SEP-5RLAVTNYUYNIP3M4  all  --  0.0.0.0/0            0.0.0.0/0            /* day12/web-svc -> 10.42.0.72:80 */ statistic mode random probability 0.20000000019
+KUBE-SEP-G36XZGWLC43NEBZK  all  --  0.0.0.0/0            0.0.0.0/0            /* day12/web-svc -> 10.42.0.73:80 */ statistic mode random probability 0.25000000000
+KUBE-SEP-DX7VW6SMCQN7FSZA  all  --  0.0.0.0/0            0.0.0.0/0            /* day12/web-svc -> 10.42.0.87:80 */ statistic mode random probability 0.33333333349
+KUBE-SEP-3C3RD3XGJR7MM5WF  all  --  0.0.0.0/0            0.0.0.0/0            /* day12/web-svc -> 10.42.0.88:80 */ statistic mode random probability 0.50000000000
+KUBE-SEP-LQR2OL4O2F3HEH7F  all  --  0.0.0.0/0            0.0.0.0/0            /* day12/web-svc -> 10.42.0.89:80 */
