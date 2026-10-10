@@ -41,3 +41,17 @@ kubectl get pods -l 'env!=prod'
 - Default: Always
 - `sleep 3600` causes restarts every hour
 - Use `sleep infinity` for long-lived demo pods
+
+
+## The Service Mechanism (Deep Understanding)
+
+### How a Service actually works
+- A Service is NOT a process — it's a set of iptables rules installed by kube-proxy on every node
+- ClusterIP is a virtual IP that gets DNAT'd to real pod IPs
+- EndpointSlice tracks the current pod IPs behind the Service
+- kube-proxy watches EndpointSlices and updates iptables
+
+### Verify with iptables
+```bash
+sudo iptables -t nat -L KUBE-SERVICES -n | grep <clusterIP>
+sudo iptables -t nat -L KUBE-SVC-XXXXX -n
