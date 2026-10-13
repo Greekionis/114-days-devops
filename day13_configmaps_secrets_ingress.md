@@ -39,3 +39,33 @@ spec:
           service:
             name: web-svc
             port: { number: 80 }
+
+
+## Verified Working — Day 13 Lab
+
+### Outputs
+$ kubectl get ingress -n day12
+NAME CLASS HOSTS ADDRESS PORTS AGE
+web-ingress traefik day13.local 192.168.1.99 80 15m
+
+$ curl http://day13.local
+[nginx welcome page]
+
+$ curl http://day13.local/api
+Hello from API
+
+
+### The Chain (verified)
+Browser → Traefik (port 80) → Ingress rule (Host + Path) → Service ClusterIP → kube-proxy DNAT → Pod → App
+
+### Ingress vs Ingress Controller
+- **Ingress** = k8s API object. The spec. Declares rules.
+- **Ingress Controller** = software (Traefik) that implements the rules.
+- In k3s, Traefik is the default Ingress Controller.
+- Traefik watches the k8s API for Ingress resources and configures itself.
+
+### "Traefik 404" mystery from Day 4 — SOLVED
+- Day 4: `curl http://day4.local` returned 404 from Traefik
+- Reason: no Ingress resource existed for `day4.local`
+- Today: created Ingress → Traefik routes → works
+- Lesson: **Ingress is the rule. Controller is the implementation. No rule = 404.**
