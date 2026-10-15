@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-headless
+  namespace: day12
+spec:
+  clusterIP: None        # headless — no virtual IP
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    name: redis
