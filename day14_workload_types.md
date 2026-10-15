@@ -54,3 +54,15 @@ kubectl patch cronjob <name> -p '{"spec":{"suspend":true}}'
 kubectl create job --from=cronjob/<name> <job-name>
 
 
+## Fixes and Gotchas
+
+### Shell quoting in command
+- **Problem:** `command: ["sh", "-c", "echo '$(date)'"]` prints literal `$(date)`
+- **Cause:** Single quotes in shell prevent command substitution
+- **Fix:** Use double quotes or YAML block scalar:
+  ```yaml
+  command:
+  - sh
+  - -c
+  - |
+    echo "Fired at $(date)"
