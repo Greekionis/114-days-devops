@@ -29,3 +29,22 @@
 - Python memory bomb with 100Mi limit → OOMKilled (exit 137)
 - Python CPU hog with 200m limit → throttled (no kill)
 - Checked QoS classes: BestEffort, Burstable, Guaranteed
+
+
+## Restart Backoff & Deep Insights
+
+### CrashLoopBackOff
+- OOMKilled containers will restart forever.
+- Kubernetes uses exponential backoff (10s, 20s, 40s... up to 5 minutes).
+- This protects the node from CPU exhaustion caused by rapid restart loops.
+
+### Setting Resources via CLI
+- `kubectl run --requests` is deprecated/removed in modern kubectl.
+- Best practice: define resources in YAML (`kubectl apply -f`).
+- Alternative: `kubectl run --overrides='{...}'` to inject JSON.
+
+### How QoS is Assigned
+- You DO NOT set QoS manually. Kubernetes calculates it based on the `resources` block.
+- No resources defined = `BestEffort` (killed first).
+- Requests < Limits = `Burstable` (medium priority).
+- Requests == Limits = `Guaranteed` (killed last, best for DBs).
