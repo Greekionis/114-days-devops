@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-hog
+  namespace: day12
+spec:
+  containers:
+  - name: hog
+    image: python:3.12-slim
+    command:
+    - python
+    - -c
+    - |
+      # Busy loop
+      count = 0
+      while True:
+          count += 1
+          if count % 10000000 == 0:
+              print(f"Count: {count}")
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "50Mi"
+      limits:
+        cpu: "200m"    # Only 20% of one core!
+        memory: "100Mi"

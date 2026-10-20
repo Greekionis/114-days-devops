@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: huge-cpu
+  namespace: day12
+spec:
+  containers:
+  - name: app
+    image: nginx:1.25
+    resources:
+      requests:
+        cpu: "8"          # Request 8 CPUs
+        memory: 1Gi
