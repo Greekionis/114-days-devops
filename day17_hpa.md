@@ -13,4 +13,11 @@
 
 ## Create HPA
 ```bash
-kubectl autoscale deployment <name> --cpu-percent=50 --min=1 --max=5
+kubectl autoscale deployment <name> --cpu-percent=50% --min=1 --max=5
+
+
+## HPA Deep Dive
+- **HPA requires requests**, not limits. Utilization is calculated against the *request*.
+- Limits protect the node; requests drive HPA math.
+- **Cooldown:** Scale-up is fast (seconds). Scale-down has a 5-minute default cooldown to prevent "flapping" (rapid up/down scaling).
+- **HPA handles application load**, NOT node resource pressure. Node pressure (MemoryPressure, DiskPressure) causes Kubelet to evict pods, not scale them.
