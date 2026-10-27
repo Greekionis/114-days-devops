@@ -28,4 +28,4 @@ jobs:
       with:
         context: ./day8-container # The folder with your Dockerfile
         push: ${{ github.event_name != 'pull_request' }} # Push only if not a PR
-        tags: ghcr.io/${{ github.repository }}/myapp:latest
+        tags: ghcr.io/${{ github.repository_owner }}/myapp:latest

@@ -44,4 +44,8 @@ resource "aws_security_group" "web_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+output "server_ip" {
+  value = aws_instance.web_server.public_ip
+}
 }
