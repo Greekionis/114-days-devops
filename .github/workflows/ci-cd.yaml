@@ -33,4 +33,5 @@ jobs:
         # HARDCODED PUSH TO TRUE SO WE KNOW IT RUNS
         push: true 
         # HARDCODED USERNAME SO THERE ARE NO VARIABLE FAILURES
-        tags: ghcr.io/greekionis/myapp:latest
+        #tags: ghcr.io/greekionis/myapp:latest
+        tags: ghcr.io/greekionis/myapp:${{ github.sha }}
