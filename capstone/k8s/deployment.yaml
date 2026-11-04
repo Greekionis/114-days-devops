@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-app
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: capstone
+  template:
+    metadata:
+      labels:
+        app: capstone
+    spec:
+      containers:
+      - name: app
+        image: ghcr.io/greekionis/capstone-app:initial # This will be updated by CI
+        ports:
+        - containerPort: 80
