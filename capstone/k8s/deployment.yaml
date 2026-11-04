@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: ghcr.io/greekionis/capstone-app:initial # This will be updated by CI
+        image: ghcr.io/greekionis/capstone-app:896f2581d2caa80c5f8824e275c042ae5e32e98f
         ports:
         - containerPort: 80
