@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: ghcr.io/greekionis/capstone-app:896f2581d2caa80c5f8824e275c042ae5e32e98f
+        image: ghcr.io/greekionis/capstone-app:7dfc6185f2129a90867baba1bf3ec8978d55c98f
         ports:
         - containerPort: 80
